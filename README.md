@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/devlotfi/esp-media-control/master/github-assets/github-banner.png">
 
-# 📜 arduino-altimeter
+# 📜 esp-media-control
 
 The goal of this project is to create a smart media control panel using the OSB OTG capabilities of ESP32S3
 
