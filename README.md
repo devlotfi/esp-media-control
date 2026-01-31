@@ -7,7 +7,7 @@ The goal of this project is to create a smart media control panel using the OSB 
 # 📌 Contents
 
 - [Tech stack](#tech-stack)
-- [Building the altitude sensor](#building-the-altitude-sensor)
+- [Building the media controller](#building-the-media-controller)
   - [Components](#components)
   - [Configuration](#configuration)
   - [Images](#images)
@@ -25,7 +25,7 @@ The goal of this project is to create a smart media control panel using the OSB 
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/fritzing.svg">
 </p>
 
-# Building the Altitude Sensor
+# Building the Media Controller
 
 ## Components
 
