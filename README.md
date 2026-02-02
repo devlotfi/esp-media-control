@@ -31,6 +31,7 @@ The goal of this project is to create a smart media control panel using the OSB 
 
 - ESP32S3
 - Potentiometer (10kΩ)
+- Ceramic Capacitor (100nF)
 - 3 Button
 - Cables
 - Case (Optional)
