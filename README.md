@@ -28,7 +28,7 @@ The goal of this project is to create a smart media control panel using the OSB 
 ## Diagrams
 
 <p float="left">
-  <img src="https://devlotfi.github.io/stack-icons/icons/fritzing.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/fritzing.svg">
 </p>
 
 # Building the Media Controller
