@@ -47,6 +47,7 @@ The goal of this project is to create a smart media control panel using the OSB 
 ## Libraries
 
 - ArduinoJson
+- Embedded Template Library ETL
 - Adafruit NeoPixel
 - Adafruit TinyUSB
 - PubSubClient
