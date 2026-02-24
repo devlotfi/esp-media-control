@@ -1,123 +1,148 @@
-#include "Adafruit_TinyUSB.h"
+#include "Embedded_Template_Library.h"
+#include <IotCommander.h>
+#include <Adafruit_TinyUSB.h>
+#include "Properties.h"
+#include "Vars.h"
+#include "Device.h"
+#include "Led.h"
+#include "Hid.h"
 
-// ---------------- USB HID SETUP ----------------
+static char output[IOTC_JSON_BUFFER_SIZE];
+static char input[IOTC_JSON_BUFFER_SIZE];
+void callback(char *topic, byte *payload, unsigned int length)
+{
+  if (length >= IOTC_JSON_BUFFER_SIZE)
+  {
+    Serial.println("Payload too large!");
+    return;
+  }
+  memcpy(input, payload, length);
+  input[length] = '\0';
 
-// HID Consumer Control (media keys)
-Adafruit_USBD_HID usb_hid;
-
-// Consumer control report descriptor
-uint8_t const hid_report_desc[] = {
-  TUD_HID_REPORT_DESC_CONSUMER()
-};
-
-// ---------------- PIN CONFIG ----------------
-
-#define POT_PIN     1     // ADC pin (potentiometer)
-
-#define BTN_PREV    10
-#define BTN_PLAY    11
-#define BTN_NEXT    12
-
-// ---------------- FILTER CONFIG ----------------
-
-#define FILTER_SAMPLES 20    // Moving average window
-#define DEAD_BAND       2    // Volume tolerance
-
-// ---------------- GLOBAL VARIABLES ----------------
-
-int adcBuffer[FILTER_SAMPLES];
-int adcIndex = 0;
-long adcSum = 0;
-
-int stableVolume = 50;   // Virtual volume position (0–100)
-
-// ---------------- MEDIA SEND FUNCTION ----------------
-
-void sendMediaKey(uint16_t key) {
-  usb_hid.sendReport16(0, key);
-  delay(4);
-  usb_hid.sendReport16(0, 0);
+  Serial.println(topic);
+  Serial.println(input);
+  if (strcmp(mqtt_discovery_request_topic, topic) == 0)
+  {
+    Serial.println("Discovery called");
+    device.discovery(output, IOTC_JSON_BUFFER_SIZE);
+    client.publish(mqtt_discovery_response_topic, output);
+  }
+  else if (strcmp(mqtt_request_topic, topic) == 0)
+  {
+    Serial.println("Request called");
+    device.request(input, output, IOTC_JSON_BUFFER_SIZE);
+    Serial.println("Request result: ");
+    Serial.println(output);
+    client.publish(mqtt_response_topic, output);
+  }
 }
 
-// ---------------- SETUP ----------------
+void reconnectMQTT()
+{
+  while (!client.connected())
+  {
+    Serial.print("Connecting to MQTT...");
+    if (client.connect(device_id, mqtt_user, mqtt_password))
+    {
+      Serial.println(" connected!");
+      client.subscribe(mqtt_discovery_request_topic);
+      client.subscribe(mqtt_request_topic);
+    }
+    else
+    {
+      Serial.print(" failed, rc=");
+      Serial.println(client.state());
+      delay(3000);
+    }
+  }
+}
 
-void setup() {
+void setup_wifi()
+{
+  Serial.println();
+  Serial.printf("Connecting to WiFi: %s\n", ssid);
 
-  // Buttons
-  pinMode(BTN_PREV, INPUT_PULLUP);
-  pinMode(BTN_PLAY, INPUT_PULLUP);
-  pinMode(BTN_NEXT, INPUT_PULLUP);
+  WiFi.mode(WIFI_STA);
+  WiFi.setSleep(false);
+  WiFi.setAutoReconnect(true);
+  WiFi.persistent(true);
 
-  // ADC config (important for stability)
-  analogReadResolution(12);
-  analogSetAttenuation(ADC_11db);
+  WiFi.begin(ssid, password);
 
-  // Initialize ADC filter buffer
-  for (int i = 0; i < FILTER_SAMPLES; i++) {
-    adcBuffer[i] = analogRead(POT_PIN);
-    adcSum += adcBuffer[i];
+  unsigned long start = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - start < 15000)
+  {
+    Serial.print(".");
+    delay(500);
   }
 
-  // USB HID init
-  usb_hid.setReportDescriptor(hid_report_desc, sizeof(hid_report_desc));
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.println("\nWiFi Failed");
+    ESP.restart();
+  }
+
+  Serial.println("\nWiFi connected!");
+  Serial.print("IP: ");
+  Serial.println(WiFi.localIP());
+}
+
+void setup_led()
+{
+  preferences.begin(PREFERENCES_NAMESAPCE, false);
+  auto ledConfig = loadConfig();
+  strncpy(currentColor, ledConfig.color, sizeof(currentColor) - 1);
+  currentColor[sizeof(currentColor) - 1] = '\0';
+  currentBrightness = ledConfig.brightness;
+  Serial.println(ledConfig.color);
+  Serial.println(ledConfig.brightness);
+  setLed(ledConfig.color, ledConfig.brightness);
+}
+
+void setup_hid()
+{
+  pinMode(TOUCH_PREV, INPUT);
+  pinMode(TOUCH_PLAY, INPUT);
+  pinMode(TOUCH_NEXT, INPUT);
+
+  pinMode(ENC_SW, INPUT_PULLUP);
+  pinMode(ENC_DT, INPUT_PULLUP);
+  pinMode(ENC_CLK, INPUT_PULLUP);
+
+  lastCLK = digitalRead(ENC_CLK);
+
+  usb_hid.setReportDescriptor(desc_hid_report, sizeof(desc_hid_report));
   usb_hid.begin();
 
-  // Wait until USB connected
   while (!TinyUSBDevice.mounted()) {
     delay(10);
   }
 }
 
-// ---------------- LOOP ----------------
+void setup()
+{
+  Serial.begin(115200);
+  setup_hid();
+  setup_led();
+  setup_wifi();
+  espClient.setCACert(rootCA);
+  client.setBufferSize(IOTC_JSON_BUFFER_SIZE);
+  client.setServer(mqtt_server, mqtt_port);
+  client.setCallback(callback);
+}
 
-void loop() {
+void loop()
+{
+  handleTouch();
+  handleEncoder();
 
-  // -------- POTENTIOMETER FILTER --------
-
-  int rawADC = analogRead(POT_PIN);
-
-  // Moving average filter
-  adcSum -= adcBuffer[adcIndex];
-  adcBuffer[adcIndex] = rawADC;
-  adcSum += rawADC;
-  adcIndex = (adcIndex + 1) % FILTER_SAMPLES;
-
-  int filteredADC = adcSum / FILTER_SAMPLES;
-
-  // Map to volume (0–100)
-  int targetVolume = map(filteredADC, 0, 4095, 0, 100);
-
-  // Hysteresis control
-  if (abs(targetVolume - stableVolume) >= DEAD_BAND) {
-
-    if (targetVolume > stableVolume) {
-      sendMediaKey(HID_USAGE_CONSUMER_VOLUME_INCREMENT);
-      stableVolume++;
-    }
-
-    if (targetVolume < stableVolume) {
-      sendMediaKey(HID_USAGE_CONSUMER_VOLUME_DECREMENT);
-      stableVolume--;
-    }
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.println("WiFi disconnected! Reconnecting...");
+    setup_wifi();
   }
 
-  // -------- BUTTONS --------
-
-  if (!digitalRead(BTN_PREV)) {
-    sendMediaKey(HID_USAGE_CONSUMER_SCAN_PREVIOUS_TRACK);
-    delay(250);
-  }
-
-  if (!digitalRead(BTN_PLAY)) {
-    sendMediaKey(HID_USAGE_CONSUMER_PLAY_PAUSE);
-    delay(250);
-  }
-
-  if (!digitalRead(BTN_NEXT)) {
-    sendMediaKey(HID_USAGE_CONSUMER_SCAN_NEXT_TRACK);
-    delay(250);
-  }
-
-  // USB rate limit
-  delay(8);
+  if (!client.connected())
+    reconnectMQTT();
+  client.loop();
 }
