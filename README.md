@@ -15,6 +15,7 @@ The goal of this project is to create a smart media control panel using the OSB 
 - [Tech stack](#tech-stack)
 - [Building the media controller](#building-the-media-controller)
   - [Components](#components)
+  - [Libraries](#libraries)
   - [Configuration](#configuration)
   - [Images](#images)
 
@@ -42,6 +43,14 @@ The goal of this project is to create a smart media control panel using the OSB 
 - Case (Optional)
 
 <img src="https://raw.githubusercontent.com/devlotfi/esp-media-control/master/github-assets/fritzing.png">
+
+## Libraries
+
+- ArduinoJson
+- Adafruit NeoPixel
+- Adafruit TinyUSB
+- PubSubClient
+- [IotCommander](https://github.com/devlotfi/iot-commander) 
 
 ## Configuration
 
