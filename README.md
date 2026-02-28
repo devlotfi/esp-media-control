@@ -22,6 +22,7 @@ The goal of this project is to create a smart media control panel using the OSB 
 # Tech stack
 
 <p float="left">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/cpp.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/arduino.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/espressif.svg">
 </p>
