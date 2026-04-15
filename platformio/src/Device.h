@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Embedded_Template_Library.h"
 #include <etl/variant.h>
 #include <stdint.h>
 #include <IotCommander.h>
@@ -27,8 +26,8 @@ auto rgbLedQuery = IotCommander::Query(IotCommander::Query::Params{
     .results = rgbLedQueryResults,
     .handler = [](IotCommander::HandlerValue results[], etl::optional<const char *> &error)
     {
-      results[0] = (const char*) currentColor;
-      results[1] = (int) currentBrightness;
+        results[0] = (const char *)currentColor;
+        results[1] = (int)currentBrightness;
     },
 });
 
@@ -51,7 +50,7 @@ auto setRgbLedAction = IotCommander::Action(IotCommander::Action::Params{
     .parameters = setRgbLedActionParameters,
     .handler = [](IotCommander::HandlerValue parameters[], IotCommander::HandlerValue results[], etl::optional<const char *> &error)
     {
-        const char* colorParam = etl::get<const char*>(parameters[0].value());
+        const char *colorParam = etl::get<const char *>(parameters[0].value());
         int brightnessParam = etl::get<int>(parameters[1].value());
 
         strncpy(currentColor, colorParam, sizeof(currentColor) - 1);
@@ -66,7 +65,7 @@ auto setRgbLedAction = IotCommander::Action(IotCommander::Action::Params{
         strncpy(ledConfig.color, currentColor, sizeof(ledConfig.color) - 1);
         ledConfig.color[sizeof(ledConfig.color) - 1] = '\0';
         saveConfig(ledConfig);
-        setLed(colorParam, (uint8_t) currentBrightness);
+        setLed(colorParam, (uint8_t)currentBrightness);
     },
 });
 
@@ -79,8 +78,7 @@ IotCommander::Query queries[] = {
     rgbLedQuery,
 };
 IotCommander::Action actions[] = {
-    setRgbLedAction
-};
+    setRgbLedAction};
 auto device = IotCommander::Device(IotCommander::Device::Params{
     .id = device_id,
     .name = device_name,
