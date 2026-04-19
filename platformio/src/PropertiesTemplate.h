@@ -33,10 +33,10 @@ uint8_t channel = 1;
 // ----------------------
 // MQTT Topics
 // ----------------------
-const char *mqtt_discovery_request_topic = "iot-commander/discovery/request";
-const char *mqtt_discovery_response_topic = "iot-commander/discovery/response";
-const char *mqtt_request_topic = "iot-commander/esp-media-control/request";
-const char *mqtt_response_topic = "iot-commander/esp-media-control/response";
+const char *mqtt_discovery_request_topic = "esp-commander/discovery/request";
+const char *mqtt_discovery_response_topic = "esp-commander/discovery/response";
+const char *mqtt_request_topic = "esp-commander/esp-media-control/request";
+const char *mqtt_response_topic = "esp-commander/esp-media-control/response";
 
 // ----------------------
 // Device

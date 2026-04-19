@@ -34,16 +34,16 @@ namespace EspNowMqttGateway
       Serial.println(peerConfig.gatewayMac);
       Serial.println(peerConfig.peerMac);
       Serial.println(peerConfig.channel);
-      EspNowMqttGateway::keyHexToBytes(peerConfig.pmk, pmk);
-      EspNowMqttGateway::keyHexToBytes(peerConfig.lmk, lmk);
+      keyHexToBytes(peerConfig.pmk, pmk);
+      keyHexToBytes(peerConfig.lmk, lmk);
       macStringToBytes(peerConfig.gatewayMac, gatewayMac);
       macStringToBytes(peerConfig.peerMac, peerMac);
       channel = peerConfig.channel;
 
       WiFi.mode(WIFI_STA);
       esp_wifi_set_mac(WIFI_IF_STA, peerMac);
-
       esp_wifi_set_channel(channel, WIFI_SECOND_CHAN_NONE);
+      esp_wifi_set_ps(WIFI_PS_NONE);
 
       if (esp_now_init() != ESP_OK)
       {
@@ -64,8 +64,8 @@ namespace EspNowMqttGateway
 
     void mqttMessage(const char *topic, const char *text)
     {
-      EspNowMqttGateway::EspNowMessage msg = {};
-      msg.type = EspNowMqttGateway::MessageType::TEXT_MESSAGE;
+      EspNowMessage msg = {};
+      msg.type = MessageType::TEXT_MESSAGE;
 
       strncpy(msg.payload.mqttEspNowMessage.topic, topic, ESP_NOW_MQTT_GATEWAY_TOPIC_SIZE - 1);
       msg.payload.mqttEspNowMessage.topic[ESP_NOW_MQTT_GATEWAY_TOPIC_SIZE - 1] = '\0';
@@ -76,7 +76,7 @@ namespace EspNowMqttGateway
       esp_err_t result = esp_now_send(
           gatewayMac,
           (const uint8_t *)&msg,
-          sizeof(EspNowMqttGateway::EspNowMessage));
+          sizeof(EspNowMessage));
 
       if (result == ESP_OK)
         Serial.println("ESP-NOW: Packet accepted");
@@ -86,8 +86,8 @@ namespace EspNowMqttGateway
 
     void notificationMessage(const char *title, const char *body)
     {
-      EspNowMqttGateway::EspNowMessage msg = {};
-      msg.type = EspNowMqttGateway::MessageType::NOTIFICATION_MESSAGE;
+      EspNowMessage msg = {};
+      msg.type = MessageType::NOTIFICATION_MESSAGE;
 
       strncpy(msg.payload.notificationEspNowMessage.title, title, ESP_NOW_MQTT_GATEWAY_NOTIFICATION_TITLE_SIZE - 1);
       msg.payload.notificationEspNowMessage.title[ESP_NOW_MQTT_GATEWAY_NOTIFICATION_TITLE_SIZE - 1] = '\0';
@@ -98,7 +98,7 @@ namespace EspNowMqttGateway
       esp_err_t result = esp_now_send(
           gatewayMac,
           (const uint8_t *)&msg,
-          sizeof(EspNowMqttGateway::EspNowMessage));
+          sizeof(EspNowMessage));
 
       if (result == ESP_OK)
         Serial.println("ESP-NOW: Packet accepted");

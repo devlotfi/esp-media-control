@@ -26,7 +26,7 @@ The goal of this project is to create a smart media control panel using the OSB 
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/cpp.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/arduino.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/espressif.svg">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/iot-commander.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/esp-commander.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/esp-now-mqtt-gateway.svg">
 </p>
 
@@ -55,13 +55,13 @@ The goal of this project is to create a smart media control panel using the OSB 
 - Adafruit NeoPixel
 - Adafruit TinyUSB
 - PubSubClient
-- [IotCommander](https://github.com/devlotfi/iot-commander)
+- [EspCommander](https://github.com/devlotfi/esp-commander)
 
 ## Configuration
 
 Change settings in [Properties.h](https://github.com/devlotfi/esp-media-control/blob/master/arduino/Properties.h)
 
-The baord relied on an MQTT and ESP-NOW communication to change the RGB LED Color uisng [IotCommander](https://github.com/devlotfi/iot-commander) and [EspNowMqttGateway](https://github.com/devlotfi/esp-now-mqtt-gateway)
+The baord relied on an MQTT and ESP-NOW communication to change the RGB LED Color uisng [EspCommander](https://github.com/devlotfi/esp-commander) and [EspNowMqttGateway](https://github.com/devlotfi/esp-now-mqtt-gateway)
 
 ## Images
 

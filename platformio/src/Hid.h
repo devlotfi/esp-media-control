@@ -75,8 +75,8 @@ void setup_hid()
   usb_hid.setReportDescriptor(desc_hid_report, sizeof(desc_hid_report));
   usb_hid.begin();
 
-  while (!TinyUSBDevice.mounted())
-  {
-    delay(10);
-  }
+  /*  while (!TinyUSBDevice.mounted())
+   {
+     delay(10);
+   } */
 }

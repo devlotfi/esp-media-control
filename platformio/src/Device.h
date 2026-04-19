@@ -2,53 +2,53 @@
 
 #include <etl/variant.h>
 #include <stdint.h>
-#include <IotCommander.h>
+#include <EspCommander.h>
 #include "Properties.h"
 #include "Vars.h"
 #include "Led.h"
 
-IotCommander::Value rgbLedQueryResults[] = {
-    IotCommander::Value(IotCommander::Value::Params{
+EspCommander::Value rgbLedQueryResults[] = {
+    EspCommander::Value(EspCommander::Value::Params{
         .name = "color",
-        .type = IotCommander::ValueType::COLOR,
+        .type = EspCommander::ValueType::COLOR,
         .required = true,
     }),
-    IotCommander::Value(IotCommander::Value::Params{
+    EspCommander::Value(EspCommander::Value::Params{
         .name = "brightness",
-        .type = IotCommander::ValueType::RANGE,
+        .type = EspCommander::ValueType::RANGE,
         .required = true,
         .min = 0,
         .max = 255,
     }),
 };
-auto rgbLedQuery = IotCommander::Query(IotCommander::Query::Params{
+auto rgbLedQuery = EspCommander::Query(EspCommander::Query::Params{
     .name = "RGB Led",
     .results = rgbLedQueryResults,
-    .handler = [](IotCommander::HandlerValue results[], etl::optional<const char *> &error)
+    .handler = [](EspCommander::HandlerValue results[], etl::optional<const char *> &error)
     {
         results[0] = (const char *)currentColor;
         results[1] = (int)currentBrightness;
     },
 });
 
-IotCommander::Value setRgbLedActionParameters[] = {
-    IotCommander::Value(IotCommander::Value::Params{
+EspCommander::Value setRgbLedActionParameters[] = {
+    EspCommander::Value(EspCommander::Value::Params{
         .name = "color",
-        .type = IotCommander::ValueType::COLOR,
+        .type = EspCommander::ValueType::COLOR,
         .required = true,
     }),
-    IotCommander::Value(IotCommander::Value::Params{
+    EspCommander::Value(EspCommander::Value::Params{
         .name = "brightness",
-        .type = IotCommander::ValueType::RANGE,
+        .type = EspCommander::ValueType::RANGE,
         .required = true,
         .min = 0,
         .max = 255,
     }),
 };
-auto setRgbLedAction = IotCommander::Action(IotCommander::Action::Params{
+auto setRgbLedAction = EspCommander::Action(EspCommander::Action::Params{
     .name = "set RGB LED",
     .parameters = setRgbLedActionParameters,
-    .handler = [](IotCommander::HandlerValue parameters[], IotCommander::HandlerValue results[], etl::optional<const char *> &error)
+    .handler = [](EspCommander::HandlerValue parameters[], EspCommander::HandlerValue results[], etl::optional<const char *> &error)
     {
         const char *colorParam = etl::get<const char *>(parameters[0].value());
         int brightnessParam = etl::get<int>(parameters[1].value());
@@ -69,17 +69,17 @@ auto setRgbLedAction = IotCommander::Action(IotCommander::Action::Params{
     },
 });
 
-static uint8_t requestBuffer[IOTC_JSON_BUFFER_SIZE];
-static uint8_t responseBuffer[IOTC_JSON_BUFFER_SIZE];
-IotCommander::StaticBufferAllocator requestAllocator(requestBuffer, sizeof(requestBuffer));
-IotCommander::StaticBufferAllocator responseAllocator(responseBuffer, sizeof(responseBuffer));
+static uint8_t requestBuffer[ESP_COMMANDER_JSON_BUFFER_SIZE];
+static uint8_t responseBuffer[ESP_COMMANDER_JSON_BUFFER_SIZE];
+EspCommander::StaticBufferAllocator requestAllocator(requestBuffer, sizeof(requestBuffer));
+EspCommander::StaticBufferAllocator responseAllocator(responseBuffer, sizeof(responseBuffer));
 
-IotCommander::Query queries[] = {
+EspCommander::Query queries[] = {
     rgbLedQuery,
 };
-IotCommander::Action actions[] = {
+EspCommander::Action actions[] = {
     setRgbLedAction};
-auto device = IotCommander::Device(IotCommander::Device::Params{
+auto device = EspCommander::Device(EspCommander::Device::Params{
     .id = device_id,
     .name = device_name,
     .requestTopic = mqtt_request_topic,

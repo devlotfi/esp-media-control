@@ -1,5 +1,5 @@
 {
-  "name": "IotCommander",
+  "name": "EspCommander",
   "version": "1.0.0",
   "description": "Library to interact with EspNowMqttGateway",
   "repository": {
