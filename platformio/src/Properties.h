@@ -24,10 +24,10 @@
 // ----------------------
 // ESP-NOW MQTT Gateway config
 // ----------------------
-const char *gatewayMac = "AA:AA:AA:AA:AA:AA";
-const char *peerMac = "AA:AA:AA:AA:AA:AA";
-const char *pmk = "66536886DB697F700F780F3920F690A9";
-const char *lmk = "66536886DB697F700F780F3920F690A0";
+const char *gatewayMac = "30:AE:A4:11:22:33";
+const char *peerMac = "56:E3:7D:FC:8A:57";
+const char *pmk = "1187BA60CAA9A7FA52B2B8C4141B4A9D";
+const char *lmk = "14C5FEBD4AFB3097011BD40CD8A5BAF2";
 uint8_t channel = 1;
 
 // ----------------------
@@ -41,5 +41,5 @@ const char *mqtt_response_topic = "esp-commander/esp-media-control/response";
 // ----------------------
 // Device
 // ----------------------
-const char *device_id = "device_id";
-const char *device_name = "device_name";
+const char *device_id = "5d0c4638-24d5-4f05-b318-3f8597ad26ac";
+const char *device_name = "MEDIA_CONTROL";
